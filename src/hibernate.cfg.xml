@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hibernate-configuration>
+	<session-factory>
+
+		<!-- Database connection settings -->
+		<property name="connection.driver-class">com.mysql.cj.jdbc.Driver</property>
+		
+		<!-- Para sacar las consultas en la consola -->
+		<!-- <property name="show_sql">true</property> -->
+
+		<!-- Database location -->
+		<property name="connection.url">jdbc:mysql://localhost:3306/mydb?serverTimezone=UTC
+		</property>
+
+		<!-- Database user name -->
+		<property name="connection.username">root</property>
+
+		<!-- Database password -->
+		<property name="connection.password">root</property>
+
+		<!-- Database dialect -->
+		<property name="dialect">org.hibernate.dialect.MySQLDialect</property>
+
+		<!-- Mapeo basado en anotaciones -->
+		<mapping class="ad.persistence.domain.Personaje"></mapping>
+
+		<mapping class="ad.persistence.domain.Elemento"></mapping>
+		
+		<mapping class="ad.persistence.domain.Artefactos"></mapping>
+
+	</session-factory>
+</hibernate-configuration>

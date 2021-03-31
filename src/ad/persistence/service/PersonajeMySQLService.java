@@ -84,6 +84,8 @@ public class PersonajeMySQLService {
 		} catch (Exception e) {
 			if (session != null) {
 				txn.rollback();
+			}else {
+				System.out.println("No se puede conectar a la base de datos");
 			}
 		} finally {
 			session.close();

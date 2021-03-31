@@ -1,15 +1,26 @@
 package ad.persistence.app;
 
+import java.util.List;
 import java.util.Scanner;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Root;
+
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.service.spi.ServiceException;
 
 import ad.persistence.domain.Artefactos;
+import ad.persistence.domain.Artefactos_;
 import ad.persistence.domain.Elemento;
 import ad.persistence.domain.Personaje;
+import ad.persistence.domain.Personaje_;
 import ad.persistence.service.ArtefactosMySQLService;
 import ad.persistence.service.ElementoMySQLService;
 import ad.persistence.service.PersonajeMySQLService;
+import ad.persistence.util.HibernateUtil;
 
 public class App {
 	public static void main(String[] args) {
@@ -28,12 +39,13 @@ public class App {
 		System.out.println(
 				"Escribir el número de la opción que se quiera realizar. Para salir escriba Exit " + "\n Personajes:"
 						+ "\n 1.Añadir Personaje \n 2.Borrar Personaje \n 3.Ver Personajes \n 4.Modificar Personaje "
-						+ "\n Artefactos:"
-						+ "\n 5.Añadir Artefacto \n 6.Borrar Artefacto \n 7.Ver Artefactos \n 8.Modificar Artefacto "
+						+ "\n Artefactos:" + "\n 5.Ver Artefactos del personaje"
+						+ "\n 6.Añadir Artefacto \n 7.Borrar Artefacto \n 8.Ver Artefactos \n 9.Modificar Artefacto "
 						+ "\n Elementos:"
-						+ "\n 9.Añadir Elemento \n 10.Borrar Elemento \n 11.Ver Elementos \n 12.Modificar Elemento");
+						+ "\n 10.Añadir Elemento \n 11.Borrar Elemento \n 12.Ver Elementos \n 13.Modificar Elemento");
 
 		do {
+
 			try {
 				opcion = sc.nextLine();
 
@@ -75,6 +87,12 @@ public class App {
 					System.out.println("Personaje modificado");
 					break;
 				case "5":
+					p.verPersonajes();
+					System.out.println("Nombre del personaje del que quieres ver los artefactos:\n");
+					nombrePersonaje = sc.nextLine();
+					a.verArtefactosDePersonajes(nombrePersonaje);
+					break;
+				case "6":
 					System.out.println("Escriba el nombre del artefacto a añadir:\n");
 					nombreNuevoArtefacto = sc.nextLine();
 					System.out.println("Introduzca su tipo:\n");
@@ -83,7 +101,7 @@ public class App {
 					a.anyadirArtefacto(artefacto);
 					System.out.println("Artefacto añadido");
 					break;
-				case "6":
+				case "7":
 					System.out.println("Artefactos:\n");
 					a.verArtefactos();
 					System.out.println("Escriba el nombre del artefacto a borrar:\n");
@@ -97,11 +115,11 @@ public class App {
 						System.out.println("El artefacto no existe, no se ha realizado ninguna acción");
 					}
 					break;
-				case "7":
+				case "8":
 					System.out.println("Artefactos:\n");
 					a.verArtefactos();
 					break;
-				case "8":
+				case "9":
 					System.out.println("Artefactos:\n");
 					a.verArtefactos();
 					System.out.println("Escriba el nombre del artefacto a modificar:\n");
@@ -115,14 +133,14 @@ public class App {
 					a.modificarArtefacto(nombreArtefacto, tipoArtefacto, nombreNuevoArtefacto, tipoNuevoArtefacto);
 					System.out.println("Artefacto modificado");
 					break;
-				case "9":
+				case "10":
 					System.out.println("Escriba el nombre del elemento a añadir:\n");
 					nombreNuevoElemento = sc.nextLine();
 					elemento = new Elemento(nombreNuevoElemento);
 					e.anyadirElemento(elemento);
 					System.out.println("Elemento añadido");
 					break;
-				case "10":
+				case "11":
 					System.out.println("Elementos:\n");
 					e.verElementos();
 					System.out.println("Escriba el nombre del elemento a borrar:\n");
@@ -134,11 +152,11 @@ public class App {
 						System.out.println("El elemento no existe, no se ha realizado ninguna acción");
 					}
 					break;
-				case "11":
+				case "12":
 					System.out.println("Elementos:\n");
 					e.verElementos();
 					break;
-				case "12":
+				case "13":
 					System.out.println("Elementos:\n");
 					e.verElementos();
 					System.out.println("Escriba el nombre del elemento a modificar:\n");
@@ -154,6 +172,7 @@ public class App {
 						"Fallo al conectar con la base de datos, asegurese de que MySQL está encendido.\nError: "
 								+ se.getMessage());
 			}
+
 		} while (!opcion.toLowerCase().equals("exit"));
 		System.out.println();
 	}

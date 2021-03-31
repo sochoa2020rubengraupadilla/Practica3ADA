@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 
 import org.hibernate.Session;
@@ -11,6 +12,8 @@ import org.hibernate.Transaction;
 
 import ad.persistence.domain.Artefactos;
 import ad.persistence.domain.Artefactos_;
+import ad.persistence.domain.Personaje;
+import ad.persistence.domain.Personaje_;
 import ad.persistence.util.HibernateUtil;
 
 public class ArtefactosMySQLService {
@@ -153,5 +156,40 @@ public class ArtefactosMySQLService {
 			session.close();
 		}
 		return existe;
+	}
+	
+	public void verArtefactosDePersonajes(String nombre) {
+		Session session = null;
+		Transaction txn = null;
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			txn = session.beginTransaction();
+
+			CriteriaBuilder builder = session.getCriteriaBuilder();
+			CriteriaQuery<Personaje> criteriaPersonaje = builder.createQuery(Personaje.class);
+
+			Root<Personaje> rootPersonaje = criteriaPersonaje.from(Personaje.class);
+
+			criteriaPersonaje.select(rootPersonaje).where(builder.equal(rootPersonaje.get(Personaje_.nombrePersonaje), nombre));
+
+			Personaje p = session.createQuery(criteriaPersonaje).getSingleResult();
+			
+			CriteriaQuery<Artefactos> criteria = builder.createQuery(Artefactos.class);
+
+			Root<Artefactos> root = criteria.from(Artefactos.class);
+
+			Join<Artefactos, Personaje> join = root.join(Artefactos_.personaje);
+			criteria.where(builder.equal(root.get(Artefactos_.personaje.getName()), session.load(Artefactos.class, p.getIdPersonaje())))
+					.distinct(true);
+
+			List<Artefactos> artef = session.createQuery(criteria).getResultList();
+			artef.forEach(System.out::println);
+		} catch (Exception ex) {
+			if (session != null) {
+				txn.rollback();
+			}
+		} finally {
+			session.close();
+		}
 	}
 }

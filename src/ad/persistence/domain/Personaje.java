@@ -32,6 +32,10 @@ public class Personaje {
 
 	}
 
+	public Personaje(String nombre) {
+		this.nombrePersonaje = nombre;
+	}
+	
 	public Personaje(String nombre, String nivel) {
 		this.nombrePersonaje = nombre;
 		this.nivelPersonaje = nivel;
